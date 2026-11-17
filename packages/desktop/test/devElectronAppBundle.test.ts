@@ -76,12 +76,12 @@ describe("dev Electron app bundle", () => {
       arch: "arm64",
     });
 
-    expect(result.appPath).toBe(`${outputRoot}/41.0.3-arm64/ZCode Dev.app`);
+    expect(result.appPath).toBe(`${outputRoot}/41.0.3-arm64/MOS 4.0 Dev.app`);
     expect(result.executablePath).toBe(
-      `${outputRoot}/41.0.3-arm64/ZCode Dev.app/Contents/MacOS/Electron`,
+      `${outputRoot}/41.0.3-arm64/MOS 4.0 Dev.app/Contents/MacOS/Electron`,
     );
     const plist = await readFile(join(result.appPath, "Contents", "Info.plist"), "utf8");
-    expect(plist).toContain("dev.zcode.app.development");
+    expect(plist).toContain("org.payswapdotorg.mos4.development");
     expect(plist).toContain("<string>zcode</string>");
   });
 

@@ -22,13 +22,24 @@ describe("desktop product identity", () => {
     expect(lock.packages[""].version).toBe(version);
   });
 
+  it("桌面壳包必须携带与根一致的 semver 版本（electron-updater 开发态回归）", () => {
+    // 回归原因：packages/desktop/package.json 缺 version 字段时，开发态 Electron 的
+    // app.getVersion() 返回 "0.0"，electron-updater 的 autoUpdater getter 在主进程
+    // 加载期就抛 "App version is not a valid semver version"，dev:desktop 无法启动。
+    const readJson = (path: string) => JSON.parse(readFileSync(path, "utf8"));
+    const root = readJson(resolve(import.meta.dirname, "../../../package.json"));
+    const desktop = readJson(resolve(import.meta.dirname, "../package.json"));
+    expect(desktop.version).toMatch(/^\d+\.\d+\.\d+/);
+    expect(desktop.version).toBe(root.version);
+  });
+
   it("ZCODE_ENV=test 使用可与生产版并排安装的 Preview 身份", () => {
     expect(resolveDesktopProductIdentity({ ZCODE_ENV: "test" })).toEqual({
       flavor: "preview",
-      appId: "dev.zcode.app.preview",
-      productName: "ZCode Preview",
-      linuxExecutableName: "zcode-preview",
-      linuxPackageName: "zcode-preview",
+      appId: "org.payswapdotorg.mos4.preview",
+      productName: "MOS 4.0 Preview",
+      linuxExecutableName: "mos-preview",
+      linuxPackageName: "mos-preview",
       cuaHelperInstallVariant: "preview",
     });
   });
@@ -56,7 +67,7 @@ describe("desktop product identity", () => {
     }
   });
 
-  it("测试后端永远是 Preview 身份，开关无法把它变成正式 ZCode", () => {
+  it("测试后端永远是 Preview 身份，开关无法把它变成正式产品身份", () => {
     expect(resolveDesktopProductFlavor({ ZCODE_ENV: "test", ZCODE_PREVIEW_IDENTITY: "0" })).toBe(
       "preview",
     );
@@ -74,16 +85,16 @@ describe("desktop product identity", () => {
     expect(resolveDesktopArtifactSuffix({})).toBe("_TEST");
   });
 
-  it("ZCODE_ENV=production 完整保留正式包身份", () => {
+  it("ZCODE_ENV=production 完整保留 MOS 4.0 正式包身份", () => {
     expect(resolveDesktopProductIdentity({ ZCODE_ENV: "production" })).toBe(
       desktopProductIdentities.production,
     );
     expect(desktopProductIdentities.production).toEqual({
       flavor: "production",
-      appId: "dev.zcode.app",
-      productName: "ZCode",
-      linuxExecutableName: "zcode",
-      linuxPackageName: "zcode",
+      appId: "org.payswapdotorg.mos4",
+      productName: "MOS 4.0",
+      linuxExecutableName: "mos",
+      linuxPackageName: "mos",
       cuaHelperInstallVariant: null,
     });
   });
@@ -113,6 +124,8 @@ describe("desktop product identity", () => {
   });
 
   it("开发态继续使用独立 AUMID，避免污染打包版 Shell 身份", () => {
-    expect(resolveWindowsAppUserModelId({}, { isPackaged: false })).toBe("cn.aminer.zcode");
+    expect(resolveWindowsAppUserModelId({}, { isPackaged: false })).toBe(
+      "org.payswapdotorg.mos4.dev",
+    );
   });
 });

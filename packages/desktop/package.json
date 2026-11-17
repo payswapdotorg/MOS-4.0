@@ -1,8 +1,9 @@
 {
   "name": "@zcode/desktop",
+  "version": "4.0.0",
   "private": true,
-  "description": "ZCode Desktop App",
-  "author": "ZCode",
+  "description": "MOS 4.0 Desktop App — YouTube Content Intelligence",
+  "author": "payswapdotorg",
   "type": "module",
   "main": "out/main/index.js",
   "imports": {

@@ -1,0 +1,10 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="mos-g" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4F46E5"/>
+      <stop offset="1" stop-color="#06B6D4"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#mos-g)"/>
+  <path d="M17 46 V18 H24.5 L32 31.5 L39.5 18 H47 V46 H40.5 V29 L34 40.5 H30 L23.5 29 V46 Z" fill="#ffffff"/>
+</svg>

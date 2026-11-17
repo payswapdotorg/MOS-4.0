@@ -123,8 +123,8 @@ export function WebRemoteControlConnectionList({
           >
             <span className="block truncate text-ui-base font-medium">
               {connection.meta.version?.trim()
-                ? `ZCode ${connection.meta.version.trim()}`
-                : "ZCode"}
+                ? `MOS 4.0 ${connection.meta.version.trim()}`
+                : "MOS 4.0"}
             </span>
             <span className="mt-0.5 block truncate text-ui-sm text-foreground-subtle">
               {copy.startedAgo(formatRelativeTime(connection.created_at, locale, now))}
