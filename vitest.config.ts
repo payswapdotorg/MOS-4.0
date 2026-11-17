@@ -69,6 +69,7 @@ export default defineConfig({
         },
       },
       "packages/zcode-cua/vitest.config.ts",
+      "packages/mos/vitest.config.ts",
     ],
   },
 });

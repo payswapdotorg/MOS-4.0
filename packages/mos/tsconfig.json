@@ -1,0 +1,13 @@
+{
+  // MOS 自有代码全部隔离在 packages/mos；typecheck 经根 tsc -b 引用列表接入。
+  // 类型检查产物写入 out/tsc（不打包、不发布，运行时按 workspace 约定直接消费 src）。
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "out/tsc",
+    "tsBuildInfoFile": "out/tsc/tsconfig.tsbuildinfo",
+    "strict": true,
+    "types": ["node"]
+  },
+  "include": ["src"]
+}
