@@ -25,8 +25,11 @@ the ledger takes limits as configuration.
 - Google OAuth 2.0 native-app profile: **PKCE (S256)**, loopback redirect
   `http://127.0.0.1:{ephemeral port}` (RFC 8252), `state` CSRF validation,
   authorization-code exchange, single-flight refresh, revocation on disconnect.
-  Implementation primitives: `packages/mos/src/youtube/oauth.ts` (the loopback
-  HTTP server itself lives in the desktop main process — later stage).
+  Implementation primitives: `packages/mos/src/youtube/oauth.ts`; the loopback
+  HTTP server (`packages/mos/src/youtube/loopback.ts`) runs inside the services
+  Host process via `packages/services/src/mos` (same placement rule as the
+  existing `cloudContentService` loopback server — Electron Main stays a pure
+  window/router process). Flow contract: `docs/mos/desktop-integration-spec.md`.
 - **Read-only scopes only**: `youtube.readonly`. The analytics scope
   (`yt-analytics.readonly`) is opt-in and only ever for the user's own channel.
   No upload, publish, comment, or channel-management scopes.

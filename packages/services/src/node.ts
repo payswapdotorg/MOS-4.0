@@ -62,6 +62,14 @@ import {
   PERSONAL_PROVIDER_CONFIG_FILE_NAME,
 } from "@zcode/provider-node";
 import { getAppConfigDir as resolveAppConfigDir } from "./paths.js";
+import { getMosYouTubeDatabasePath, getZCodeDataRootDir } from "./paths.js";
+import { MosScanStore } from "@zcode/mos/persistence";
+import {
+  IMosConnectionService,
+  IMosResearchService,
+  MosConnectionService,
+  MosResearchService,
+} from "./mos/index.js";
 import {
   createSystemCredentialCipher,
   createServerCredentialCipher,
@@ -1537,6 +1545,24 @@ export function createLocalServices(options: {
       resolveLegacyTaskSessionsDir: () => join(resolveAppConfigDir(), "sessions"),
     }),
   });
+  // MOS 4.0：YouTube 连接与 niche 研究服务（docs/mos/desktop-integration-spec.md）。
+  // 扫描库懒加载（首次使用才建库/迁移）；Google 凭据走加密 credentialService；
+  // OAuth client 配置来源（env 优先于 mos-youtube.json）见 docs/integrations/YOUTUBE.md。
+  const mosScanStore = new MosScanStore({
+    dbPath: getMosYouTubeDatabasePath(),
+    backupDirectories: [join(getZCodeDataRootDir(), "backup")],
+  });
+  const mosConnectionService = new MosConnectionService({
+    credentialService,
+    configDir: resolveAppConfigDir(),
+    env: process.env,
+  });
+  const mosResearchService = new MosResearchService({
+    connection: mosConnectionService,
+    store: mosScanStore,
+    env: process.env,
+  });
+
   let handleOAuthProviderLogout: ReturnType<typeof createOAuthProviderLogoutHandler> | null = null;
   const oauthCredentialRepo = new OAuthCredentialRepo(credentialService, {
     onCorruptOAuthSessionCleared: async (providers) => {
@@ -2996,6 +3022,8 @@ export function createLocalServices(options: {
     .register(ITerminalService, terminalService)
     .register(ISettingService, settingService)
     .register(IOnboardingRecordService, onboardingRecordService)
+    .register(IMosConnectionService, mosConnectionService)
+    .register(IMosResearchService, mosResearchService)
     // RPC 根据运行时方法名分发，不能把 Host 私有批量凭据端口直接注册给 Renderer。
     .register(ICredentialService, {
       // 整库检查/恢复不按键读写；是否对当前连接开放由 exposeOnChannelServer 的恢复策略决定。
@@ -3373,6 +3401,8 @@ export function createLocalServices(options: {
 
   // 见 sharedSqliteRepos 声明处注释：登记全部 tasks-index sqlite 句柄，dispose 链统一关闭
   sqliteReposToClose.push(taskIndexRepo);
+  // MOS 扫描库句柄同样交给 dispose 链（首次使用后才会真正持有 sqlite 连接）。
+  sqliteReposToClose.push(mosScanStore);
   sharedSqliteRepos.set(services, sqliteReposToClose);
   return services;
 }

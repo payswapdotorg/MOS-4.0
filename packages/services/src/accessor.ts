@@ -62,6 +62,8 @@ import type { ISourceServerWorkspaceService } from "./source-server-workspace/so
 import type { ISourceServerManagementService } from "./source-server-management/sourceServerManagement.js";
 import type { IOnboardingRecordService } from "./onboarding/onboardingRecord.js";
 import type { IConversationShareService } from "./conversation-share/conversationShare.js";
+import type { IMosConnectionService } from "./mos/mosConnection.js";
+import type { IMosResearchService } from "./mos/mosResearch.js";
 
 /** UI 层消费的统一服务接口 */
 export interface IServiceAccessor {
@@ -82,6 +84,10 @@ export interface IServiceAccessor {
   readonly settingService: ISettingService;
   /** Onboarding 完成记录（本地持久化）；旧测试 double / 不支持的 host 可不提供。 */
   readonly onboardingRecordService?: IOnboardingRecordService;
+  /** MOS 4.0 YouTube 连接（Google OAuth / API key）；远端 server 与旧 host 可不提供。 */
+  readonly mosConnectionService?: IMosConnectionService;
+  /** MOS 4.0 niche 研究与保存结果；远端 server 与旧 host 可不提供。 */
+  readonly mosResearchService?: IMosResearchService;
   readonly credentialService: ICredentialService;
   readonly broadcastService: IBroadcastService;
   readonly zcodeTaskService: IZCodeTaskService;

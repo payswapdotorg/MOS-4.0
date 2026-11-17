@@ -50,6 +50,11 @@ export interface QuotaCostEstimate {
 }
 
 function pacificDate(now: Date): string {
+  return currentPacificDate(now);
+}
+
+/** Current Pacific-Time calendar date (YYYY-MM-DD) — the Google quota day. */
+export function currentPacificDate(now: Date = new Date()): string {
   return new Intl.DateTimeFormat("en-CA", {
     timeZone: "America/Los_Angeles",
     year: "numeric",
@@ -133,6 +138,17 @@ export class QuotaLedger {
     };
   }
 
+  /**
+   * Seed the ledger with usage already spent today (recomputed from persisted
+   * scans when the service restarts mid-day). Never marks the ledger over
+   * limit — the numbers are historical facts; the next pre-flight check fails.
+   */
+  applyExistingUsage(usage: QuotaCostEstimate): void {
+    this.rollDateIfNeeded();
+    this.searchCallsUsed += usage.searchCalls;
+    this.unitsUsed += usage.units;
+  }
+
   private rollDateIfNeeded(): void {
     const today = pacificDate(this.now());
     if (today !== this.datePt) {
@@ -141,6 +157,24 @@ export class QuotaLedger {
       this.unitsUsed = 0;
     }
   }
+}
+
+/**
+ * UTC instant of the most recent Pacific-Time midnight — the moment the Google
+ * quota day started. Derived from the PT wall clock of `now`, so it stays
+ * correct across PDT/PST switches within the same PT day.
+ */
+export function startOfCurrentPacificDay(now: Date = new Date()): Date {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Los_Angeles",
+    hour12: false,
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  }).format(now);
+  const [hour, minute, second] = parts.split(":").map((value) => Number(value));
+  const msSincePtMidnight = ((hour ?? 0) * 3_600 + (minute ?? 0) * 60 + (second ?? 0)) * 1_000;
+  return new Date(now.getTime() - msSincePtMidnight);
 }
 
 export const quotaCostSchema: z.ZodType<QuotaCost> = z.discriminatedUnion("kind", [

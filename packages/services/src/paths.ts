@@ -207,6 +207,11 @@ export function getTasksIndexDatabasePath(): string {
   return join(getAppConfigDir(), "tasks-index.sqlite");
 }
 
+/** ~/.zcode/v2/mos-youtube.sqlite — MOS niche 扫描结果库（docs/mos/desktop-integration-spec.md） */
+export function getMosYouTubeDatabasePath(): string {
+  return join(getAppConfigDir(), "mos-youtube.sqlite");
+}
+
 /** workspace 级身份键：远程优先使用 workspaceIdentity，本地回退 workspacePath。 */
 function getWorkspaceKey(workspacePath: string, workspaceIdentity?: string): string {
   return workspaceIdentity?.trim() || workspacePath;

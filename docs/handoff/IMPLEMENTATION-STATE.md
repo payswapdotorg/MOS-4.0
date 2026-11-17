@@ -40,9 +40,29 @@ only for demonstrated work. (Legend: ✅ done+verified · 🔄 in progress · �
 - ✅ OAuth primitives: PKCE S256 (RFC 7636 vector pinned), authorization URL,
   loopback callback parsing + state validation, single-flight refresh,
   invalid_grant → reconnect-required error, revocation (unit-tested).
-- ⏳ Desktop main-process integration: loopback HTTP server, Google provider
-  adapter in `packages/services` OAuth, credential storage via ZCode keyring
-  cipher, connection health/disconnect flows.
+- ✅ Loopback OAuth callback server (`packages/mos/src/youtube/loopback.ts`):
+  RFC 8252, port 0 on 127.0.0.1, state-first validation, denial/timeout/abort
+  handling, injectable serverFactory — unit-tested against real sockets.
+- ✅ Sqlite scan store (`packages/mos/src/persistence/scanStore.ts`):
+  `mos-youtube.sqlite` via the shared migration runner (`0001_mos_youtube`),
+  scan rehydration, observations with orphan sweep, PT-day usage sums —
+  tested against real temp-database files.
+- ✅ Services layer (`packages/services/src/mos`): `MosConnectionService`
+  (Google OAuth loopback flow, PKCE, encrypted credential keys `mos:youtube:*`,
+  single-flight refresh, revoke-on-disconnect, API-key path, config from
+  env/`mos-youtube.json`) + `MosResearchService` (theme expansion, quota
+  continuation from persisted scans, scan execution + progress events,
+  saved-research CRUD); registered in `node.ts`, accessor, client getters,
+  shared ServiceChannels; architecture module `mos-services` adopted
+  (0 violations). Spec: `docs/mos/desktop-integration-spec.md`.
+- ⚠️ Known issue (open): the root `pnpm typecheck` aggregate fails with 36
+  TS2591-class errors confined to `packages/mos` Node-builtin typing
+  (`node:fs`/`node:sqlite`/…), while `tsc -b` inside `packages/mos` passes and
+  all 93 mos tests + architecture checks are green. Fix path (next session):
+  align the mos tsconfig `types`/`typeRoots` with how upstream leaf packages
+  (e.g. session-control) declare Node types inside the root build list, or
+  register mos via a project reference.
+- ⏳ Niche Explorer UI (Stage 4) — integration surfaces mapped, not yet built.
 - ⏳ Live integration tests (owner-gated: Google Cloud project, OAuth client,
   test account).
 
@@ -100,3 +120,4 @@ checksums.
 |---|---|
 | 2026-11-17 | `pnpm install` exit 0 (1m36s); `pnpm typecheck` exit 0 (NODE_OPTIONS=--max-old-space-size=2600, 2m20s); `pnpm test:mos` **77/77 passed** (10 files); `pnpm test:engineering` **1,032 passed / 10 skipped** (167 files, 95s) after `pnpm --filter @zcode/contracts build`; full `verify:pre-push` gate green (worktree, e2e targets, lint, docs, db schema, architecture tests, `architecture:check --changed` 0 violations); history+tags+stage commits pushed to origin (verified via ls-remote) |
 | 2026-11-17 | **CI run 44113597403 green on `6367d835`**: Linux checks (install, typecheck, engineering + MOS tests) ✅ and Linux production build (full recursive build incl. desktop renderer) ✅ |
+| 2026-11-17 (session 2) | `pnpm test:mos` **93/93 passed** (loopback real-socket tests, scan-store real-sqlite tests, quota helpers); `architecture:check --changed` **0 violations** (mos + new mos-services module); **typecheck RED**: 36 TS2591 errors confined to packages/mos Node-builtin types under the root aggregate build only (per-package build passes) — see Stage 1 note; engineering suite not re-run this session |

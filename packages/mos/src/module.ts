@@ -4,7 +4,7 @@
  */
 export const mosModule = {
   id: "mos",
-  requires: [],
+  requires: ["shared", "sqlite-migrations"],
   provides: ["mos"],
   publicEntrypoints: [
     "index.ts",
@@ -13,5 +13,6 @@ export const mosModule = {
     "quota/index.ts",
     "youtube/index.ts",
     "research/index.ts",
+    "persistence/index.ts",
   ],
 } as const;

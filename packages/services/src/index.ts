@@ -91,6 +91,23 @@ export type {
   CreateOnboardingRecordServiceOptions,
   OnboardingRecordServiceFactory,
 } from "./onboarding/onboardingRecord.js";
+
+// MOS 4.0：YouTube 连接与 niche 研究服务（docs/mos/desktop-integration-spec.md）
+export {
+  IMosConnectionService,
+  IMosResearchService,
+  MosConnectionService,
+  MosResearchService,
+} from "./mos/index.js";
+export type {
+  MosConnectionServiceOptions,
+  MosConnectionState,
+  MosConnectStartResult,
+  MosGoogleConnectionState,
+  MosResearchServiceOptions,
+  MosScanProgressEvent,
+  NicheDefinitionInput,
+} from "./mos/index.js";
 // 这里只能导出 descriptor 和类型。根 index 会被 renderer 经 value import 拉进浏览器包，
 // 若 value 导出 createOnboardingRecordService，会连带 fs/atomicFileUtils → @zcode/shared/node →
 // node:timers/promises 整条 Node 链进浏览器，模块加载直接抛错导致整个应用黑屏。

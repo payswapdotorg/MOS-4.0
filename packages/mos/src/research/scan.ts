@@ -65,6 +65,8 @@ export interface ScanDeps {
   client: YouTubeClient;
   ledger?: QuotaLedger;
   now?: () => Date;
+  /** Injectable scan id (services layer generates it up front so progress events are addressable). */
+  scanId?: string;
   onProgress?: (progress: ScanProgress) => void;
 }
 
@@ -170,7 +172,7 @@ export async function runNicheScan(
 
   deps.onProgress?.({ phase: "done" });
   return {
-    scanId: randomUUID(),
+    scanId: deps.scanId ?? randomUUID(),
     niche,
     themes,
     plan,

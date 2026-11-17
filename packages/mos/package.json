@@ -10,12 +10,14 @@
     "./capability": "./src/capability/index.ts",
     "./quota": "./src/quota/index.ts",
     "./youtube": "./src/youtube/index.ts",
-    "./research": "./src/research/index.ts"
+    "./research": "./src/research/index.ts",
+    "./persistence": "./src/persistence/index.ts"
   },
   "scripts": {
     "build": "tsc -b --pretty false"
   },
   "dependencies": {
+    "@zcode/shared": "workspace:*",
     "zod": "4.6.5"
   },
   "devDependencies": {

@@ -219,6 +219,10 @@ export const ServiceChannels = {
   HighspeedCard: "highspeed-card",
   /** Onboarding 完成记录服务（本地持久化，后续上传服务器） */
   OnboardingRecord: "onboarding-record",
+  /** MOS 4.0 YouTube 连接服务（Google OAuth loopback、API key、连接状态事件） */
+  MosConnection: "mos-connection",
+  /** MOS 4.0 niche 研究服务（主题扩展、配额、扫描执行与保存的研究结果） */
+  MosResearch: "mos-research",
 } as const;
 
 export type ServiceChannelName = (typeof ServiceChannels)[keyof typeof ServiceChannels];

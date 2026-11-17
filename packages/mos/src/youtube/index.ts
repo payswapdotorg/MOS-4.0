@@ -46,6 +46,13 @@ export type {
   TokenExchangeRequest,
   TokenSet,
 } from "./oauth.js";
+export { startLoopbackCallbackServer } from "./loopback.js";
+export type {
+  LoopbackFailureReason,
+  LoopbackResult,
+  LoopbackServerOptions,
+  PendingLoopbackFlow,
+} from "./loopback.js";
 export {
   channelListResponseSchema,
   channelResourceSchema,

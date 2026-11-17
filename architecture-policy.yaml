@@ -1835,7 +1835,7 @@ modules:
       - packages/mos/src
       - packages/mos/vitest.config.ts
     managed: true
-    requires: []
+    requires: [ shared, sqlite-migrations ]
     publicEntrypoints:
       - packages/mos/src/index.ts
       - packages/mos/src/contract.ts
@@ -1843,9 +1843,25 @@ modules:
       - packages/mos/src/quota/index.ts
       - packages/mos/src/youtube/index.ts
       - packages/mos/src/research/index.ts
+      - packages/mos/src/persistence/index.ts
     layers:
       adapters: .
     owner: desktop
+  # mos-services：由 architecture:adopt 登记
+  - id: mos-services
+    roots:
+      - packages/services/src/mos
+    managed: true
+    requires:
+      - mos
+      - rpc
+      - services
+      - shared
+    publicEntrypoints:
+      - packages/services/src/mos/index.ts
+      - packages/services/src/mos/contract.ts
+    layers:
+      adapters: .
 
 global:
   # 临时时间戳（2026-09-10）：unmanaged-new-file 只约束此日期之后首次入库的文件。
