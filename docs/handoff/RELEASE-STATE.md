@@ -12,8 +12,13 @@
 
 - **No MOS release has been cut yet.** The product is at Stage 1–3 (engine) with
   Stages 4–6 pending (see IMPLEMENTATION-STATE.md).
-- First CI run was triggered by the Stage 0–3 push; its outcome will be recorded
-  here. A green CI build is **not** Windows acceptance (see below).
+- **First CI run: green.** Run
+  [44113597403](https://github.com/payswapdotorg/MOS-4.0/actions/runs/44113597403)
+  on commit `6367d835`: Linux checks (install → typecheck → `@zcode/contracts`
+  prebuild → engineering tests → MOS tests) ✅ and the Linux production build
+  (full recursive build incl. the desktop renderer) ✅. The Windows installer
+  workflow has not been exercised yet — trigger `windows-release.yml` manually
+  when the first installable artifact is needed.
 - Release blockers, in order: Niche Explorer UI (Stage 4), agent workflow
   (Stage 5), live YouTube verification (owner Google Cloud project), Windows
   installer run on CI, and human Windows acceptance on the owner's machine.

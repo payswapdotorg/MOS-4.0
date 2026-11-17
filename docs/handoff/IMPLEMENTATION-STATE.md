@@ -98,4 +98,5 @@ checksums.
 
 | Date | Evidence |
 |---|---|
-| 2026-11-17 | `pnpm install` exit 0 (1m36s); `pnpm typecheck` exit 0 (NODE_OPTIONS=--max-old-space-size=2600, 2m20s); `pnpm test:mos` **77/77 passed** (10 files); `pnpm test:engineering` **1,032 passed / 10 skipped** (167 files, 95s) after `pnpm --filter @zcode/contracts build`; history+tags pushed to origin (verified via ls-remote) |
+| 2026-11-17 | `pnpm install` exit 0 (1m36s); `pnpm typecheck` exit 0 (NODE_OPTIONS=--max-old-space-size=2600, 2m20s); `pnpm test:mos` **77/77 passed** (10 files); `pnpm test:engineering` **1,032 passed / 10 skipped** (167 files, 95s) after `pnpm --filter @zcode/contracts build`; full `verify:pre-push` gate green (worktree, e2e targets, lint, docs, db schema, architecture tests, `architecture:check --changed` 0 violations); history+tags+stage commits pushed to origin (verified via ls-remote) |
+| 2026-11-17 | **CI run 44113597403 green on `6367d835`**: Linux checks (install, typecheck, engineering + MOS tests) ✅ and Linux production build (full recursive build incl. desktop renderer) ✅ |
