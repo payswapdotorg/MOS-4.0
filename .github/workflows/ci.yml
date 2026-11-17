@@ -1,0 +1,95 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Linux checks (typecheck + unit tests)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.14.0
+
+      - name: Activate pinned pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.33.2 --activate
+          pnpm --version
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/pnpm/store
+          key: pnpm-store-linux-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: pnpm-store-linux-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          HUSKY: "0"
+
+      - name: Typecheck
+        run: pnpm typecheck
+        env:
+          # The default heap aborts on this monorepo; 3 GB is the verified minimum.
+          NODE_OPTIONS: --max-old-space-size=3000
+
+      - name: Build test-entry artifacts
+        # Engineering tests import CLI package sources that resolve workspace
+        # entries (e.g. @zcode/contracts) from their built dist output.
+        run: pnpm --filter @zcode/contracts build
+
+      - name: Engineering tests
+        run: pnpm test:engineering
+
+      - name: MOS unit tests
+        run: pnpm test:mos
+
+  build:
+    name: Linux production build
+    # Full recursive build (incl. the desktop renderer Vite build) needs more RAM
+    # than the TL container has; it is validated here on a resource-appropriate runner.
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.14.0
+
+      - name: Activate pinned pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.33.2 --activate
+          pnpm --version
+
+      - name: Cache pnpm store
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/pnpm/store
+          key: pnpm-store-linux-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: pnpm-store-linux-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          HUSKY: "0"
+
+      - name: Build all workspace packages
+        run: pnpm build
+        env:
+          NODE_OPTIONS: --max-old-space-size=8192
